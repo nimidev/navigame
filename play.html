@@ -1,30 +1,139 @@
-<!--AIzaSyD8iZVlelmWFBBhN4tkyMTK0gqJv7dTtVI-->
 <!DOCTYPE html>
-<html lang="he">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>City Navigation Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Your styles here */
+        #map {
+            height: 100%;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .hidden {
+            display: none;
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>משחק ניווט בעיר</h1>
-        <p id="instructions">מצא את דרכך למקום המסומן ללא הסתכלות בטלפון!</p>
-        <div id="map-container">
-            <div id="map"></div>
-            <div id="overlay" class="hidden">המפה מוסתרת</div>
-        </div>
-        <div id="controls">
-            <button id="startBtn">התחל משחק</button>
-            <button id="readyBtn" class="hidden">מוכן</button>
-            <button id="arrivedBtn" class="hidden">הגעתי ליעד</button>
-        </div>
-        <p id="score">ניקוד: 0</p>
-        <button id="newGameBtn" class="hidden" onclick="startNewGame()">משחק חדש</button>
+    <div id="map"></div>
+    <div id="overlay" class="hidden">
+        <button id="arrivedBtn">Verify Location</button>
     </div>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8iZVlelmWFBBhN4tkyMTK0gqJv7dTtVI&libraries=geometry&language=he"></script>
-    <script src="script.js"></script>
+    <div id="controls">
+        <button id="startBtn">Start Game</button>
+        <button id="readyBtn" class="hidden">Ready</button>
+        <button id="newGameBtn" class="hidden">New Game</button>
+        <div id="points">Points: 0</div>
+    </div>
+
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer;
+        let destination;
+        let gameStarted = false;
+        let points = 0;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -34.397, lng: 150.644 },
+                zoom: 15
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+        }
+
+        function startGame() {
+            document.getElementById('startBtn').classList.add('hidden');
+            document.getElementById('readyBtn').classList.remove('hidden');
+            navigator.geolocation.getCurrentPosition((position) => {
+                const pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                map.setCenter(pos);
+                map.setZoom(18);
+
+                destination = {
+                    lat: pos.lat + 0.001, // Example destination nearby
+                    lng: pos.lng + 0.001
+                };
+
+                directionsService.route(
+                    {
+                        origin: pos,
+                        destination: destination,
+                        travelMode: google.maps.TravelMode.WALKING
+                    },
+                    (response, status) => {
+                        if (status === google.maps.DirectionsStatus.OK) {
+                            directionsRenderer.setDirections(response);
+                        } else {
+                            window.alert('Directions request failed due to ' + status);
+                        }
+                    }
+                );
+            });
+        }
+
+        function startWalking() {
+            document.getElementById('overlay').classList.remove('hidden');
+            document.getElementById('readyBtn').classList.add('hidden');
+            document.getElementById('arrivedBtn').classList.remove('hidden');
+        }
+
+        function verifyLocation() {
+            document.getElementById('overlay').classList.add('hidden');
+            navigator.geolocation.getCurrentPosition((position) => {
+                const pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                if (Math.abs(pos.lat - destination.lat) < 0.0001 && Math.abs(pos.lng - destination.lng) < 0.0001) {
+                    points += 10;
+                    alert('Congrats! You arrived at the destination.');
+                } else {
+                    alert('Wrong location. Try again.');
+                }
+
+                document.getElementById('points').textContent = 'Points: ' + points;
+                document.getElementById('newGameBtn').classList.remove('hidden');
+                document.getElementById('arrivedBtn').classList.add('hidden');
+            });
+        }
+
+        function startNewGame() {
+            gameStarted = false;
+            document.getElementById('newGameBtn').classList.add('hidden');
+            document.getElementById('startBtn').classList.remove('hidden');
+            directionsRenderer.set('directions', null); // Clear previous directions
+        }
+
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('readyBtn').addEventListener('click', startWalking);
+        document.getElementById('arrivedBtn').addEventListener('click', verifyLocation);
+        document.getElementById('newGameBtn').addEventListener('click', startNewGame);
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_API_KEY_PLACEHOLDER&libraries=geometry&language=he" onload="initMap()"></script>
 </body>
 </html>
-
