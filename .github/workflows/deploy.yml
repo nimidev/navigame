@@ -23,7 +23,7 @@ jobs:
 
       - name: Replace API Key Placeholder
         run: |
-          sed -i 's/GOOGLE_MAPS_API_KEY_PLACEHOLDER/${{ secrets.GOOGLE_MAPS_API_KEY }}/' index.html
+          sed -i 's/GOOGLE_MAPS_API_KEY_PLACEHOLDER/${{ secrets.GOOGLE_MAPS_API_KEY }}/' play.html
 
       - name: Build project
         run: npm run build
