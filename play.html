@@ -1,0 +1,30 @@
+<!--AIzaSyD8iZVlelmWFBBhN4tkyMTK0gqJv7dTtVI-->
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Navigation Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>משחק ניווט בעיר</h1>
+        <p id="instructions">מצא את דרכך למקום המסומן ללא הסתכלות בטלפון!</p>
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="overlay" class="hidden">המפה מוסתרת</div>
+        </div>
+        <div id="controls">
+            <button id="startBtn">התחל משחק</button>
+            <button id="readyBtn" class="hidden">מוכן</button>
+            <button id="arrivedBtn" class="hidden">הגעתי ליעד</button>
+        </div>
+        <p id="score">ניקוד: 0</p>
+        <button id="newGameBtn" class="hidden" onclick="startNewGame()">משחק חדש</button>
+    </div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8iZVlelmWFBBhN4tkyMTK0gqJv7dTtVI&libraries=geometry&language=he"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
